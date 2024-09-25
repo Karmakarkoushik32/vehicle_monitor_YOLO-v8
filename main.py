@@ -72,7 +72,7 @@ class App(QtWidgets.QWidget):
         default_model = 'yolov8n.pt'
         
         try:
-            self.detector = Detection(device = self.ui.deviceselector.currentText(), viz_mode = self.ui.vizselectro.currentIndex())
+            self.detector = Detection(device = self.ui.deviceselector.currentText().split('|')[0], viz_mode = self.ui.vizselectro.currentIndex())
             print(os.path.join(MODELS_PATH, default_model))
             self.detector.loadModel(os.path.join(MODELS_PATH, default_model))
             QMessageBox.information(self, "Information", "Model loaded successfully")
@@ -112,7 +112,7 @@ class App(QtWidgets.QWidget):
         self.detector.setVizMode(mode_index)
 
     def onDeviceSelect(self):
-        device = self.ui.deviceselector.currentText()
+        device = self.ui.deviceselector.currentText().split('|')[0]
         logging.info(f"device changed to: {device}")
         self.detector.selectDevice(device)
         self.detector.resetModel()
@@ -238,7 +238,7 @@ class App(QtWidgets.QWidget):
             scale_y = height / self.q_img.size().height()
             points = [(point.x() * scale_x, point.y() * scale_y) for point in line]
             pts = np.array(points, dtype=np.int32).reshape((-1, 1, 2))
-            frame = cv2.polylines(frame, [pts], False, (0, 255, 0), 3)
+            frame = cv2.polylines(frame, [pts], False, (0, 255, 0), 2, lineType=cv2.LINE_AA)
 
         bytes_per_line = 3 * width
         self.q_img = QImage(
